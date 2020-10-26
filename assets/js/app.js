@@ -1,8 +1,13 @@
-import { cupData, trackData } from "./data.js";
+import { cupData } from "./cupData.js";
+import { trackData } from "./trackData.js";
+import { customCupData } from "./customCupData.js";
+
+const cupType = "custum";
 
 const cups = document.getElementById("cups");
 
 function createCup(currentCup) {
+  const trackType = cupType === "default" ? "defaultTracks" : "myTracks";
   const cup = document.createElement("div");
   cup.setAttribute("class", "cup");
 
@@ -10,16 +15,24 @@ function createCup(currentCup) {
   img.setAttribute("src", currentCup.img);
 
   const title = document.createElement("h1");
-  title.innerText = currentCup.title;
+  if (cupType === "default") {
+    title.innerText = currentCup.title;
+  } else {
+    title.innerText = currentCup.myTitle;
+  }
 
-  const name = document.createElement("h2");
-  name.innerText = currentCup.name;
+  const myTitle = document.createElement("h2");
+  if (cupType === "default") {
+    myTitle.innerText = currentCup.myTitle;
+  } else {
+    myTitle.innerText = currentCup.title;
+  }
 
-  const tracks = addTracks(currentCup.tracks);
+  const tracks = addTracks(currentCup[trackType]);
 
   cup.appendChild(img);
   cup.appendChild(title);
-  cup.appendChild(name);
+  cup.appendChild(myTitle);
   cup.appendChild(tracks);
   return cup;
 }
@@ -33,9 +46,8 @@ function addTracks(tracks) {
     const currentTrack = trackData.filter((el) => {
       return el.id === track;
     });
-    trackElement.innerText = currentTrack[0].name;
+    trackElement.innerText = currentTrack[0].title;
     trackContainer.appendChild(trackElement);
-    console.log("track: ", track);
   });
   return trackContainer;
 }
@@ -47,4 +59,13 @@ function displayCups(cupData) {
   });
 }
 
+function addCustomCupData() {
+  customCupData.map((cup) => {
+    const enhancedCup = cupData[cup.id - 1];
+    enhancedCup.myTracks = cup.myTracks;
+    enhancedCup.myTitle = cup.myTitle;
+  });
+}
+
+addCustomCupData();
 displayCups(cupData);
