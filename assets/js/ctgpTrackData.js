@@ -1,4 +1,4 @@
-export const trackData = [
+export const ctgpTrackData = [
   { id: 1, title: "Dawn Township" },
   { id: 2, title: "GBA Cheep Cheep Island" },
   { id: 3, title: "ASDF_Course" },

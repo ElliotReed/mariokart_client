@@ -1,3 +1,12 @@
+:root {
+  --blue: #2fb7e1;
+  --white: #f7f7f7;
+  --black: #222222;
+  --gold: rgb(158, 134, 0);
+  --silver: #a6b8c2;
+  --border-size: 6px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -8,12 +17,18 @@ body {
   padding: 0;
   margin: 0;
   overflow-x: hidden;
-  font-family: "Fredoka One", cursive;
+  /* font-family: "Fredoka One", cursive;*/
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--white);
+}
+
+button {
+  font-family: inherit;
 }
 
 .container {
   background-color: transparent;
-  max-width: 600px;
+  max-width: 768px;
   margin: 0 auto;
 }
 
@@ -25,43 +40,117 @@ body {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-image: url("../img/mariokart.jpg");
+  background-image: url("../img/Mario_Kart_Tour.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   background-color: bisque;
 }
 
+#track-sort-controls {
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem;
+  /* text-align: center; */
+}
+
+#default,
+#custom,
+#alphabetical {
+  font-size: 0.8em;
+  text-transform: capitalize;
+  width: 110px;
+  height: 110px;
+  border: 10px solid var(--blue);
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.32s ease-in-out;
+}
+
+#default:active,
+#custom:active,
+#alphabetical:active {
+  transform: scale(1.1);
+}
+
+.race-header {
+  background: linear-gradient(to right, var(--blue), transparent);
+  padding: 1rem;
+  font-size: 3rem;
+  line-height: 3rem;
+  border: none;
+}
+
+#cups {
+  padding: 0 1rem;
+  text-align: center;
+  perspective: 500px;
+}
+
 .cup {
-  margin: 1em;
-  background-color: rgba(230, 230, 230, 0.9);
+  z-index: 1;
+  background-color: #222222fd;
   text-align: center;
   padding: 1em;
   border-radius: 0.5em;
+  margin: 0.68rem;
+  transition: transform 1s ease-in-out;
+  transform: rotate3d(0, 0.5, 0, 0deg);
+  box-shadow: 10px 10px 8px #0000008e;
+}
+
+.cup:hover {
+  transform: rotate3d(0, 0, 0, 0deg);
 }
 
 .cup img {
-  max-height: 75px;
+  max-height: 128px;
   margin: 0;
 }
 
+.img-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--white);
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  margin: auto;
+  border: 5px solid var(--blue);
+}
+
 .cup h1 {
-  margin: 0.5em 0;
+  margin: 1em 0;
   font-weight: bold;
+  font-size: 2.32rem;
+  text-shadow: -2px -2px 0 var(--silver), 2px -2px 0 var(--silver),
+    -2px 2px 0 var(--silver), 2px 2px 0 var(--silver);
 }
 
 .cup h2 {
   font-size: 0.8rem;
   font-weight: normal;
+  margin-bottom: 0.5em;
+}
+
+.cup-number {
+  font-size: 0.8rem;
+  margin: 0;
+  text-align: right;
 }
 
 .tracks {
-  font-size: 1.5em;
+  font-size: 2em;
 }
 
 .tracks p {
-  background-color: #ddd;
+  position: relative;
+  background-color: var(--black);
   padding: 0.5em;
   margin: 0.5em 0;
-  border: 5px solid rgba(158, 136, 10, 0.747);
+  border: var(--border-size) solid var(--gold);
+  text-shadow: -2px -2px 0 var(--gold), 2px -2px 0 var(--gold),
+    -2px 2px 0 var(--gold), 2px 2px 0 var(--gold);
 }
