@@ -37,7 +37,6 @@ function addAlphabeticalCupData(ctgpData) {
 
     return (cup.alphabeticalTracks = trackIds);
   });
-  // return;
   return alphabetizedData;
 }
 
@@ -62,11 +61,43 @@ const dom = {
   defaultSortButton: document.getElementById("default"),
   customSortButton: document.getElementById("custom"),
   alphabeticalSortButton: document.getElementById("alphabetical"),
+  pickCupButton: document.getElementById("pick-cup"),
+  pickedCup: document.getElementById("picked-cup"),
+  toTopButton: document.getElementById("to-top"),
+  logo: document.querySelector(".logo"),
 };
 
 const state = {
   trackType: "customTracks",
 };
+
+function toTop() {
+  dom.logo.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function randomCup() {
+  const numberOfCTGPCups = dom.ctgpCups.childElementCount;
+  const numberOfWiiCups = 8;
+
+  const totalCups = numberOfCTGPCups + numberOfWiiCups;
+
+  const randomNumber = Math.floor(Math.random() * totalCups) + 1;
+
+  const cupSet = randomNumber > numberOfCTGPCups ? "wii-" : "ctgp-";
+  const cupNumber =
+    randomNumber > numberOfCTGPCups
+      ? randomNumber - numberOfCTGPCups
+      : randomNumber;
+
+  let dataCup = cupSet + cupNumber;
+  const cupElement = document.querySelector(`[data-cup=${dataCup}]`);
+  const cupText = cupElement.children[2].textContent;
+  dom.pickedCup.textContent = cupText;
+
+  setTimeout(() => {
+    cupElement.scrollIntoView({ behavior: "smooth" });
+  }, 600);
+}
 
 function addTracks(tracks, cupData) {
   const trackContainer = document.createElement("div");
@@ -83,14 +114,23 @@ function addTracks(tracks, cupData) {
   return trackContainer;
 }
 
+function getDataAttributeValue(cupData, id) {
+  if (cupData.type === "wii") {
+    return "wii-" + id;
+  } else {
+    return "ctgp-" + id;
+  }
+}
+
 function createCup(currentCup, cupData) {
-  const title = document.createElement("h1");
   const cup = document.createElement("div");
   cup.setAttribute("class", "cup");
-  const img = document.createElement("img");
-  img.setAttribute("src", currentCup.img);
+  cup.setAttribute("data-cup", getDataAttributeValue(cupData, currentCup.id));
   const imgContainer = document.createElement("div");
   imgContainer.setAttribute("class", "img-container");
+  const img = document.createElement("img");
+  img.setAttribute("src", currentCup.img);
+  const title = document.createElement("h1");
   const customTitle = document.createElement("h2");
   const cupNumber = document.createElement("p");
   cupNumber.setAttribute("class", "cup-number");
@@ -145,6 +185,7 @@ function displayCups(displayElement, cupData) {
     }
   });
 }
+
 (function () {
   displayCups(dom.ctgpCups, db.ctgpData);
   displayCups(dom.wiiCups, db.wiiData);
@@ -161,4 +202,20 @@ dom.customSortButton.addEventListener("click", () => {
 dom.alphabeticalSortButton.addEventListener("click", () => {
   state.trackType = "alphabeticalTracks";
   displayCups(dom.ctgpCups, db.ctgpData);
+});
+dom.pickCupButton.addEventListener("click", () => {
+  randomCup();
+});
+dom.toTopButton.addEventListener("click", () => {
+  toTop();
+});
+document.body.addEventListener("scroll", () => {
+  setTimeout(() => {
+    console.log("document.body.scrollTop: ", document.body.scrollTop);
+    if (document.body.scrollTop === 0) {
+      dom.toTopButton.style.display = "none";
+    } else {
+      dom.toTopButton.style.display = "block";
+    }
+  }, 500);
 });
