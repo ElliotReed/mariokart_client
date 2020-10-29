@@ -10,20 +10,25 @@
 </head>
 
 <body class="background">
+  <button id="to-top" class="wii-button">☝</button>
   <div class="container">
     <img class="logo" src="./assets/img/Mario_Kart_Wii_Logo.png" />
+    <div id="cup-picker">
+      <button id="pick-cup" class="wii-button">Random Cup</button>
+      <p id="picked-cup"></p>
+    </div>
     <h3 class="race-header">CTGP Revolution</h3>
     <div id="track-sort-controls">
-      <button id='default'>default</button>
-      <button id='custom'>custom</button>
-      <button id='alphabetical'>alphabetical</button>
+      <button id="default" class="wii-button">default</button>
+      <button id="custom" class="wii-button">custom</button>
+      <button id="alphabetical" class="wii-button">alphabetical</button>
     </div>
     <div id="ctgp-cups"></div>
     <h3 class="race-header">Mario Kart Wii</h3>
     <div id="wii-cups"></div>
   </div>
 
-  <script type='module' src="./assets/js/app.js"></script>
+  <script type="module" src="./assets/js/app.js"></script>
 </body>
 
 </html>
