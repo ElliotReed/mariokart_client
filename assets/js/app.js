@@ -211,7 +211,6 @@ dom.toTopButton.addEventListener("click", () => {
 });
 document.body.addEventListener("scroll", () => {
   setTimeout(() => {
-    console.log("document.body.scrollTop: ", document.body.scrollTop);
     if (document.body.scrollTop === 0) {
       dom.toTopButton.style.display = "none";
     } else {
