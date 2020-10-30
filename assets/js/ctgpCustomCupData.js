@@ -99,7 +99,7 @@ export const ctgpCustomCupData = [
     id: 17,
     title: "Propellor Cup",
     customTitle: "Space Cup",
-    customTracks: [214, 123, 32, 142],
+    customTracks: [214, 89, 129, 142],
   },
   {
     id: 18,
