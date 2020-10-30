@@ -1,5 +1,6 @@
 :root {
   --blue: #2fb7e1;
+  --blueAlpha: #2fb7e188;
   --white: #f7f7f7;
   --black: #222222;
   --gold: rgb(158, 134, 0);
@@ -56,6 +57,10 @@ body {
   margin: 0 auto;
 }
 
+header {
+  margin-bottom: 1rem;
+}
+
 .logo {
   width: 100%;
 }
@@ -71,12 +76,90 @@ body {
   background-color: bisque;
 }
 
-#cup-picker {
+.game-panel {
+  margin: 1rem;
   border-radius: var(--border-radius);
-  display: flex;
-  align-items: center;
   padding: 1rem;
   background: linear-gradient(to bottom, var(--white), #f7f7f7dd);
+}
+
+#scoreboard {
+  margin-bottom: 1rem;
+}
+
+#scoreboard-controls {
+  color: var(--black);
+  font-weight: bold;
+  text-align: center;
+}
+
+.scoreboard-controls__button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.scoreboard-controls__button-container p {
+  margin: 0 1rem;
+}
+
+.scoreboard-controls__reset-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scoreboard-controls__reset-button-container button {
+  flex-shrink: 0;
+}
+
+#owed-amount {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+#scoreboard-controls button {
+  display: inline;
+  outline: none;
+}
+
+#scoreboard-controls button > figure {
+  margin: 0;
+}
+
+.score-display {
+  display: flex;
+  margin: 1rem 0 0;
+}
+
+.score-display figure {
+  flex-grow: 0;
+  margin: 0 1rem 0 0;
+  color: var(--black);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.score-display div {
+  flex-grow: 1;
+}
+
+.score-display p {
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+
+.cup-stats {
+  border-radius: var(--border-radius);
+  background: linear-gradient(to bottom, var(--blue) 75%, var(--blueAlpha));
+}
+
+#cup-picker {
+  display: flex;
+  align-items: center;
 }
 
 #pick-cup {
@@ -100,7 +183,12 @@ body {
 }
 
 .race-stripe {
-  background: linear-gradient(to right, var(--blue), transparent);
+  background: linear-gradient(
+    to right,
+    var(--blue) 50%,
+    var(--blueAlpha) 75%,
+    transparent
+  );
 }
 
 .race-header {

@@ -12,9 +12,60 @@
 
 <body class="background">
   <button id="to-top" class="wii-button">☝</button>
+  <header>
+    <div class="container">
+      <img class="logo" src="./assets/img/Mario_Kart_Wii_Logo_Transparent.png" />
+    </div>
+  </header>
   <div class="container">
-    <img class="logo" src="./assets/img/Mario_Kart_Wii_Logo.png" />
-    <div id="cup-picker">
+
+    <div id="scoreboard" class="game-panel">
+      <div id="scoreboard-controls">
+        <p>Who won?</p>
+        <div class="scoreboard-controls__button-container">
+          <button id="increase-ellie-cups" class="wii-button">
+            <figure>
+              <img src="./assets/img/DaisyMKW.png" />
+              <figcaption>Ellie</figcaption>
+            </figure>
+          </button>
+          <p>or</p>
+          <button id="increase-elliot-cups" class="wii-button">
+            <figure>
+              <img src="./assets/img/Funky_KongMKW.png" />
+              <figcaption>Elliot</figcaption>
+            </figure>
+          </button>
+        </div>
+        <div class="scoreboard-controls__reset-button-container">
+          <p id="owed-amount"></p>
+          <button id="reset-current-cups" class="wii-button">Pay Up!</button>
+        </div>
+      </div>
+
+      <div class="score-display">
+        <figure>
+          <img src="./assets/img/DaisyMKW.png" />
+          <figcaption>Ellie</figcaption>
+        </figure>
+        <div class="cup-stats">
+          <p id="ellie-lifetime"></p>
+          <p id="ellie-current"></p>
+        </div>
+      </div>
+      <div class="score-display">
+        <figure>
+          <img src="./assets/img/Funky_KongMKW.png" />
+          <figcaption>Elliot</figcaption>
+        </figure>
+        <div class="cup-stats">
+          <p id="elliot-lifetime"></p>
+          <p id="elliot-current"></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="cup-picker" class="game-panel">
       <button id="pick-cup" class="wii-button">Random Cup</button>
       <p id="picked-cup" class="race-stripe"></p>
     </div>

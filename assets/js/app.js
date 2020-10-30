@@ -4,6 +4,9 @@ import { ctgpCustomCupData } from "./ctgpCustomCupData.js";
 import { wiiCupData } from "./wiiCupData.js";
 import { wiiTrackData } from "./wiiTrackData.js";
 
+import { config } from "./config.js";
+const BASE_URL = config.BASE_URL;
+
 function addCustomCupData(customCupData, cupData) {
   const customizedData = customCupData.map((cup) => {
     const enhancedCup = cupData[cup.id - 1];
@@ -65,10 +68,28 @@ const dom = {
   pickedCup: document.getElementById("picked-cup"),
   toTopButton: document.getElementById("to-top"),
   logo: document.querySelector(".logo"),
+  increaseEllieCupsButton: document.getElementById("increase-ellie-cups"),
+  increaseElliotCupsButton: document.getElementById("increase-elliot-cups"),
+  resetCurrentCupsButton: document.getElementById("reset-current-cups"),
+  ellieLifetime: document.getElementById("ellie-lifetime"),
+  ellieCurrent: document.getElementById("ellie-current"),
+  elliotLifetime: document.getElementById("elliot-lifetime"),
+  elliotCurrent: document.getElementById("elliot-current"),
+  owedAmount: document.getElementById("owed-amount"),
 };
 
 const state = {
   trackType: "customTracks",
+  gameData: {
+    ellie: {
+      lifetimeCups: 0,
+      currentCups: 0,
+    },
+    elliot: {
+      lifetimeCups: 0,
+      currentCups: 0,
+    },
+  },
 };
 
 function toTop() {
@@ -186,9 +207,43 @@ function displayCups(displayElement, cupData) {
   });
 }
 
+function fetchData() {
+  fetch(`${BASE_URL}/gameData`)
+    .then((response) => response.json())
+    .then((data) => {
+      state.gameData = data;
+      showRaceData();
+      showOwedAmount(state.gameData);
+    });
+}
+
+function saveData(gameData) {
+  fetch(`${BASE_URL}/gameData`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(gameData),
+  })
+    .then((res) => {
+      console.log("response.status: ", res.status);
+      showOwedAmount(state.gameData);
+    })
+    .catch((err) => {
+      console.error("Error: ", err);
+    });
+}
+
+function increaseCupCount(player) {
+  state.gameData[player].lifetimeCups++;
+  state.gameData[player].currentCups++;
+  showOwedAmount(state.gameData);
+}
+
 (function () {
   displayCups(dom.ctgpCups, db.ctgpData);
   displayCups(dom.wiiCups, db.wiiData);
+  fetchData();
 })();
 
 dom.defaultSortButton.addEventListener("click", () => {
@@ -209,6 +264,74 @@ dom.pickCupButton.addEventListener("click", () => {
 dom.toTopButton.addEventListener("click", () => {
   toTop();
 });
+dom.increaseEllieCupsButton.addEventListener("click", () => {
+  increaseCupCount("ellie");
+  saveData(state.gameData);
+  showRaceData();
+});
+dom.increaseElliotCupsButton.addEventListener("click", () => {
+  increaseCupCount("elliot");
+  saveData(state.gameData);
+  showRaceData();
+});
+dom.resetCurrentCupsButton.addEventListener("click", () => {
+  state.gameData.ellie.currentCups = 0;
+  state.gameData.elliot.currentCups = 0;
+  saveData(state.gameData);
+  showRaceData();
+});
+
+function showRaceData() {
+  const ellieData = state.gameData.ellie;
+  const elliotData = state.gameData.elliot;
+  dom.ellieLifetime.textContent = `lifetime cups won ${
+    ellieData.lifetimeCups
+  }: ${calculateCash(ellieData.lifetimeCups)}`;
+  dom.ellieCurrent.textContent = `current cups won ${
+    ellieData.currentCups
+  }: ${calculateCash(ellieData.currentCups)}`;
+  dom.elliotLifetime.textContent = `lifetime cups won ${
+    elliotData.lifetimeCups
+  }: ${calculateCash(elliotData.lifetimeCups)}`;
+  dom.elliotCurrent.textContent = `current cups won ${
+    elliotData.currentCups
+  }: ${calculateCash(elliotData.currentCups)}`;
+
+  if (ellieData.currentCups === 0 && elliotData.currentCups === 0) {
+    dom.resetCurrentCupsButton.style.display = "none";
+  } else {
+    dom.resetCurrentCupsButton.style.display = "block";
+  }
+}
+
+function calculateCash(value) {
+  const cashAmount = value * 5;
+  let cashString;
+  if (cashAmount < 100) {
+    cashString = `${cashAmount}¢`;
+  } else {
+    cashString = `$${(cashAmount / 100).toFixed(2)}`;
+  }
+  return cashString;
+}
+
+function showOwedAmount(data) {
+  const ellieCurrentCups = data.ellie.currentCups;
+  const elliotCurrentCups = data.elliot.currentCups;
+
+  let textString = "";
+  if (ellieCurrentCups > elliotCurrentCups) {
+    textString = `Elliot owes Ellie ${calculateCash(
+      ellieCurrentCups - elliotCurrentCups
+    )}!`;
+  } else if (elliotCurrentCups > ellieCurrentCups) {
+    textString = `Ellie owes Elliot ${calculateCash(
+      elliotCurrentCups - ellieCurrentCups
+    )}!`;
+  }
+  dom.owedAmount.textContent = textString;
+}
+
 document.body.addEventListener("scroll", () => {
   setTimeout(() => {
     if (document.body.scrollTop === 0) {
