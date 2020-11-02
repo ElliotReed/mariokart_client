@@ -153,6 +153,7 @@ header {
 }
 
 .cup-stats {
+  text-transform: capitalize;
   border-radius: var(--border-radius);
   background: linear-gradient(to bottom, var(--blue) 75%, var(--blueAlpha));
 }

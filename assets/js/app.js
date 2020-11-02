@@ -143,6 +143,32 @@ function getDataAttributeValue(cupData, id) {
   }
 }
 
+function setTitlesAndReturnTrackType(cupData, title, customTitle, currentCup) {
+  if (cupData.type === "wii") {
+    title.innerText = currentCup.title;
+    customTitle.innerText = "";
+    return "defaultTracks";
+  } else if (cupData.type === "ctgp") {
+    switch (state.trackType) {
+      case "defaultTracks":
+        title.innerText = currentCup.title;
+        customTitle.innerText = "";
+        return "defaultTracks";
+        break;
+      case "customTracks":
+        title.innerText = currentCup.customTitle;
+        customTitle.innerText = currentCup.title;
+        return "customTracks";
+        break;
+      case "alphabeticalTracks":
+        title.innerText = currentCup.title;
+        customTitle.innerText = "";
+        return "alphabeticalTracks";
+        break;
+    }
+  }
+}
+
 function createCup(currentCup, cupData) {
   const cup = document.createElement("div");
   cup.setAttribute("class", "cup");
@@ -150,37 +176,19 @@ function createCup(currentCup, cupData) {
   const imgContainer = document.createElement("div");
   imgContainer.setAttribute("class", "img-container");
   const img = document.createElement("img");
-  img.setAttribute("src", currentCup.img);
+  img.setAttribute("src", `assets/img/cups/${currentCup.img}`);
   const title = document.createElement("h1");
   const customTitle = document.createElement("h2");
   const cupNumber = document.createElement("p");
   cupNumber.setAttribute("class", "cup-number");
   cupNumber.innerText = `Cup ${currentCup.id}`;
 
-  let cupTrackType;
-  if (cupData.type === "wii") {
-    cupTrackType = "defaultTracks";
-    title.innerText = currentCup.title;
-    customTitle.innerText = "";
-  } else if (cupData.type === "ctgp") {
-    switch (state.trackType) {
-      case "defaultTracks":
-        cupTrackType = "defaultTracks";
-        title.innerText = currentCup.title;
-        customTitle.innerText = "";
-        break;
-      case "customTracks":
-        cupTrackType = "customTracks";
-        title.innerText = currentCup.customTitle;
-        customTitle.innerText = currentCup.title;
-        break;
-      case "alphabeticalTracks":
-        cupTrackType = "alphabeticalTracks";
-        title.innerText = currentCup.title;
-        customTitle.innerText = "";
-        break;
-    }
-  }
+  let cupTrackType = setTitlesAndReturnTrackType(
+    cupData,
+    title,
+    customTitle,
+    currentCup
+  );
 
   if (currentCup[cupTrackType].length < 1) {
     return;
@@ -240,6 +248,65 @@ function increaseCupCount(player) {
   showOwedAmount(state.gameData);
 }
 
+function showRaceData() {
+  const ellieData = state.gameData.ellie;
+  const elliotData = state.gameData.elliot;
+  dom.ellieLifetime.textContent = createRaceDataString(
+    ellieData.lifetimeCups,
+    "lifetime"
+  );
+  dom.ellieCurrent.textContent = createRaceDataString(
+    ellieData.currentCups,
+    "current"
+  );
+  dom.elliotLifetime.textContent = createRaceDataString(
+    elliotData.lifetimeCups,
+    "lifetime"
+  );
+  dom.elliotCurrent.textContent = createRaceDataString(
+    elliotData.currentCups,
+    "current"
+  );
+
+  if (ellieData.currentCups === 0 && elliotData.currentCups === 0) {
+    dom.resetCurrentCupsButton.style.display = "none";
+  } else {
+    dom.resetCurrentCupsButton.style.display = "block";
+  }
+}
+
+function createRaceDataString(dataCups, type) {
+  return `${type} cups won ${dataCups}:\u00A0 ${calculateCash(dataCups)}`;
+}
+
+function calculateCash(value) {
+  const cashAmount = value * 5;
+  let cashString;
+  if (cashAmount < 100) {
+    cashString = `${cashAmount}¢`;
+  } else {
+    cashString = `$${(cashAmount / 100).toFixed(2)}`;
+  }
+  return cashString;
+}
+
+function showOwedAmount(data) {
+  const ellieCurrentCups = data.ellie.currentCups;
+  const elliotCurrentCups = data.elliot.currentCups;
+
+  let textString = "";
+  if (ellieCurrentCups > elliotCurrentCups) {
+    textString = `Elliot owes Ellie ${calculateCash(
+      ellieCurrentCups - elliotCurrentCups
+    )}!`;
+  } else if (elliotCurrentCups > ellieCurrentCups) {
+    textString = `Ellie owes Elliot ${calculateCash(
+      elliotCurrentCups - ellieCurrentCups
+    )}!`;
+  }
+  dom.owedAmount.textContent = textString;
+}
+
 (function () {
   displayCups(dom.ctgpCups, db.ctgpData);
   displayCups(dom.wiiCups, db.wiiData);
@@ -280,57 +347,6 @@ dom.resetCurrentCupsButton.addEventListener("click", () => {
   saveData(state.gameData);
   showRaceData();
 });
-
-function showRaceData() {
-  const ellieData = state.gameData.ellie;
-  const elliotData = state.gameData.elliot;
-  dom.ellieLifetime.textContent = `lifetime cups won ${
-    ellieData.lifetimeCups
-  }: ${calculateCash(ellieData.lifetimeCups)}`;
-  dom.ellieCurrent.textContent = `current cups won ${
-    ellieData.currentCups
-  }: ${calculateCash(ellieData.currentCups)}`;
-  dom.elliotLifetime.textContent = `lifetime cups won ${
-    elliotData.lifetimeCups
-  }: ${calculateCash(elliotData.lifetimeCups)}`;
-  dom.elliotCurrent.textContent = `current cups won ${
-    elliotData.currentCups
-  }: ${calculateCash(elliotData.currentCups)}`;
-
-  if (ellieData.currentCups === 0 && elliotData.currentCups === 0) {
-    dom.resetCurrentCupsButton.style.display = "none";
-  } else {
-    dom.resetCurrentCupsButton.style.display = "block";
-  }
-}
-
-function calculateCash(value) {
-  const cashAmount = value * 5;
-  let cashString;
-  if (cashAmount < 100) {
-    cashString = `${cashAmount}¢`;
-  } else {
-    cashString = `$${(cashAmount / 100).toFixed(2)}`;
-  }
-  return cashString;
-}
-
-function showOwedAmount(data) {
-  const ellieCurrentCups = data.ellie.currentCups;
-  const elliotCurrentCups = data.elliot.currentCups;
-
-  let textString = "";
-  if (ellieCurrentCups > elliotCurrentCups) {
-    textString = `Elliot owes Ellie ${calculateCash(
-      ellieCurrentCups - elliotCurrentCups
-    )}!`;
-  } else if (elliotCurrentCups > ellieCurrentCups) {
-    textString = `Ellie owes Elliot ${calculateCash(
-      elliotCurrentCups - ellieCurrentCups
-    )}!`;
-  }
-  dom.owedAmount.textContent = textString;
-}
 
 document.body.addEventListener("scroll", () => {
   setTimeout(() => {
