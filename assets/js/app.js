@@ -3,8 +3,9 @@ import { ctgpTrackData } from "./ctgpTrackData.js";
 import { ctgpCustomCupData } from "./ctgpCustomCupData.js";
 import { wiiCupData } from "./wiiCupData.js";
 import { wiiTrackData } from "./wiiTrackData.js";
+import { randomIntegerFromInterval } from "./utils/randomIntegerFromInterval.js";
 
-import { config } from "./config.js";
+import { config } from "../../config/config.js";
 const BASE_URL = config.BASE_URL;
 
 function addCustomCupData(customCupData, cupData) {
@@ -76,24 +77,218 @@ const dom = {
   elliotLifetime: document.getElementById("elliot-lifetime"),
   elliotCurrent: document.getElementById("elliot-current"),
   owedAmount: document.getElementById("owed-amount"),
+  scorecard: document.getElementById("scorecard"),
+  scoreboard: document.getElementById("scoreboard"),
+  pickRacersButtton: document.getElementById("pick-racers"),
+  ellieRacer: document.getElementById("ellie-racer"),
+  elliotRacer: document.getElementById("elliot-racer"),
+  loader: document.getElementById("loader"),
 };
 
 const state = {
   trackType: "customTracks",
   gameData: {
     ellie: {
-      lifetimeCups: 0,
-      currentCups: 0,
+      cups: {
+        lifetime: 0,
+        current: 0,
+      },
     },
     elliot: {
-      lifetimeCups: 0,
-      currentCups: 0,
+      cups: {
+        lifetime: 0,
+        current: 0,
+      },
     },
   },
+  characters: [],
+  vehicles: [],
 };
 
 function toTop() {
-  dom.logo.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  dom.scoreboard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function toggleLoader(boolean) {
+  if (boolean) {
+    dom.loader.style.display = "flex";
+  } else {
+    dom.loader.style.display = "none";
+  }
+}
+
+function getSimilarRacer(characters, otherRacer, proximity = 0) {
+  const similarRacers = characters.filter((character) => {
+    if (proximity === 0) {
+      return (
+        character.bonus.total === otherRacer.bonus &&
+        character.id != otherRacer.id
+      );
+    } else {
+      return (
+        character.bonus.total + proximity === otherRacer.bonus ||
+        (character.bonus.total - proximity === otherRacer.bonus &&
+          character.id != otherRacer.id)
+      );
+    }
+  });
+
+  if (similarRacers.length < 1) {
+    proximity++;
+    getSimilarRacer(characters, otherRacer, proximity);
+  } else {
+    const index = randomIntegerFromInterval(0, similarRacers.length - 1);
+    const similarRacer = similarRacers[index];
+    return similarRacer;
+  }
+}
+
+function getRacer(otherRacer) {
+  const racer = {};
+  let id = randomIntegerFromInterval(1, state.characters.length);
+  if (otherRacer != undefined) {
+    const similarRacer = getSimilarRacer(state.characters, otherRacer);
+    id = similarRacer.id;
+  }
+
+  const result = state.characters.filter((character) => {
+    return character.id === id;
+  })[0];
+
+  racer.id = result.id;
+  racer.name = result.name;
+  racer.img = result.img;
+  racer.bonus = result.bonus.total;
+  racer.class = result.class;
+
+  if (racer.id === 25 || racer.id === 26) {
+    racer.name = "Mii Outfit B";
+    racer.img = "Mii_Outfit_B.png";
+  }
+
+  if (racer.id === 27) {
+    racer.name = "Mii Outfit A";
+    racer.img = "Mii_Outfit_A.png";
+  }
+
+  return racer;
+}
+
+function getSimilarVehicle(vehicles, otherVehicle, proximity) {
+  if (proximity === undefined) {
+    proximity = 1;
+  }
+
+  const similarVehicles = vehicles.filter((vehicle) => {
+    if (vehicle.stats.total + proximity === otherVehicle.stats.total) {
+      return vehicle;
+    }
+    if (vehicle.stats.total - proximity === otherVehicle.stats.total) {
+      return vehicle;
+    }
+  });
+
+  if (similarVehicles.length < 1) {
+    proximity++;
+    console.log("no similar");
+    return getSimilarVehicle(vehicles, otherVehicle, proximity);
+  } else {
+    const index = randomIntegerFromInterval(0, similarVehicles.length - 1);
+    console.log("index: ", index);
+    const similarVehicle = similarVehicles[index];
+    console.log("getsimilarVehicle: ", similarVehicle);
+    return similarVehicle;
+  }
+}
+
+function getVehicle(racer, otherVehicle) {
+  const vehicle = {};
+  let id = randomIntegerFromInterval(1, 12);
+
+  const vehiclesByClass = state.vehicles.filter((vehicle) => {
+    return vehicle.class === racer.class;
+  });
+
+  if (otherVehicle != undefined) {
+    console.log("otherVehicle: ", otherVehicle);
+    const similarVehicle = getSimilarVehicle(vehiclesByClass, otherVehicle);
+    console.log("similarVehicle: ", similarVehicle);
+    id = similarVehicle.id;
+  }
+
+  const result = vehiclesByClass.filter((vehicle) => {
+    return (
+      vehicle.id === id || vehicle.id === id + 12 || vehicle.id === id + 24
+    );
+  })[0];
+
+  vehicle.id = result.id;
+  vehicle.class = result.class;
+  vehicle.name = result.name;
+  vehicle.img = result.img;
+  vehicle.stats = {};
+  vehicle.stats.total = result.stats.total;
+  // console.log("vehicle: ", vehicle);
+  return vehicle;
+}
+function pickRacers() {
+  const ellieRacer = getRacer();
+  const elliotRacer = getRacer(ellieRacer);
+  const ellieVehicle = getVehicle(ellieRacer);
+  const elliotVehicle = getVehicle(elliotRacer, ellieVehicle);
+
+  displayRacer(ellieRacer, ellieVehicle, "ellie");
+  displayRacer(elliotRacer, elliotVehicle, "elliot");
+}
+
+function displayRacer(racer, vehicle, player) {
+  const racerContainer = document.createElement("div");
+  racerContainer.setAttribute("class", "racer-container");
+
+  const h3 = document.createElement("h3");
+  h3.textContent = player;
+
+  const centerTextContainer = document.createElement("div");
+  centerTextContainer.setAttribute("class", "center-text");
+  const centerText = document.createElement("p");
+  centerText.textContent = "driving the";
+
+  const characterContainer = document.createElement("div");
+  characterContainer.setAttribute("class", "racer-card");
+  const characterName = document.createElement("p");
+  characterName.textContent = racer.name;
+  const characterImage = document.createElement("img");
+  characterImage.setAttribute("src", `/assets/img/characters/${racer.img}`);
+
+  const vehicleContainer = document.createElement("div");
+  vehicleContainer.setAttribute("class", "racer-card");
+  const vehicleName = document.createElement("p");
+  vehicleName.textContent = vehicle.name;
+  const vehicleImage = document.createElement("img");
+  vehicleImage.setAttribute("src", `/assets/img/vehicles/${vehicle.img}`);
+
+  let playerNode;
+  if (player === "ellie") {
+    playerNode = dom.ellieRacer;
+  }
+  if (player === "elliot") {
+    playerNode = dom.elliotRacer;
+  }
+
+  playerNode.innerHTML = "";
+  playerNode.appendChild(h3);
+
+  characterContainer.appendChild(characterImage);
+  characterContainer.appendChild(characterName);
+  racerContainer.appendChild(characterContainer);
+
+  centerTextContainer.appendChild(centerText);
+  racerContainer.appendChild(centerTextContainer);
+
+  vehicleContainer.appendChild(vehicleImage);
+  vehicleContainer.appendChild(vehicleName);
+  racerContainer.appendChild(vehicleContainer);
+  playerNode.appendChild(racerContainer);
 }
 
 function randomCup() {
@@ -125,12 +320,15 @@ function addTracks(tracks, cupData) {
   trackContainer.setAttribute("class", "tracks");
   // console.log("cupData: ", cupData);
   tracks.forEach((track) => {
+    const trackElementContainer = document.createElement("div");
     const trackElement = document.createElement("p");
+    trackElement.setAttribute("class", "border-glow");
     const currentTrack = cupData.tracks.filter((el) => {
       return el.id === track;
     });
     trackElement.innerText = currentTrack[0].title;
-    trackContainer.appendChild(trackElement);
+    trackElementContainer.appendChild(trackElement);
+    trackContainer.appendChild(trackElementContainer);
   });
   return trackContainer;
 }
@@ -215,60 +413,33 @@ function displayCups(displayElement, cupData) {
   });
 }
 
-function fetchData() {
-  fetch(`${BASE_URL}/gameData`)
-    .then((response) => response.json())
-    .then((data) => {
-      state.gameData = data;
-      showRaceData();
-      showOwedAmount(state.gameData);
-    });
-}
-
-function saveData(gameData) {
-  fetch(`${BASE_URL}/gameData`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(gameData),
-  })
-    .then((res) => {
-      console.log("response.status: ", res.status);
-      showOwedAmount(state.gameData);
-    })
-    .catch((err) => {
-      console.error("Error: ", err);
-    });
-}
-
 function increaseCupCount(player) {
-  state.gameData[player].lifetimeCups++;
-  state.gameData[player].currentCups++;
+  state.gameData[player].cups.lifetime++;
+  state.gameData[player].cups.current++;
   showOwedAmount(state.gameData);
 }
 
-function showRaceData() {
-  const ellieData = state.gameData.ellie;
-  const elliotData = state.gameData.elliot;
+function showRaceData(gameData) {
+  const ellieData = gameData.ellie;
+  const elliotData = gameData.elliot;
   dom.ellieLifetime.textContent = createRaceDataString(
-    ellieData.lifetimeCups,
+    ellieData.cups.lifetime,
     "lifetime"
   );
   dom.ellieCurrent.textContent = createRaceDataString(
-    ellieData.currentCups,
+    ellieData.cups.current,
     "current"
   );
   dom.elliotLifetime.textContent = createRaceDataString(
-    elliotData.lifetimeCups,
+    elliotData.cups.lifetime,
     "lifetime"
   );
   dom.elliotCurrent.textContent = createRaceDataString(
-    elliotData.currentCups,
+    elliotData.cups.current,
     "current"
   );
 
-  if (ellieData.currentCups === 0 && elliotData.currentCups === 0) {
+  if (ellieData.cups.current === 0 && elliotData.cups.current === 0) {
     dom.resetCurrentCupsButton.style.display = "none";
   } else {
     dom.resetCurrentCupsButton.style.display = "block";
@@ -291,8 +462,8 @@ function calculateCash(value) {
 }
 
 function showOwedAmount(data) {
-  const ellieCurrentCups = data.ellie.currentCups;
-  const elliotCurrentCups = data.elliot.currentCups;
+  const ellieCurrentCups = data.ellie.cups.current;
+  const elliotCurrentCups = data.elliot.cups.current;
 
   let textString = "";
   if (ellieCurrentCups > elliotCurrentCups) {
@@ -303,14 +474,64 @@ function showOwedAmount(data) {
     textString = `Ellie owes Elliot ${calculateCash(
       elliotCurrentCups - ellieCurrentCups
     )}!`;
+  } else if (ellieCurrentCups === elliotCurrentCups && elliotCurrentCups != 0) {
+    textString = `Even Steven`;
   }
   dom.owedAmount.textContent = textString;
+}
+
+function fetchCharacterData() {
+  fetch(`${BASE_URL}/characterData`)
+    .then((res) => res.json())
+    .then((data) => {
+      state.characters = data;
+    });
+}
+
+// ==========http requests ==========
+function fetchVehicleData() {
+  fetch(`${BASE_URL}/vehicleData`)
+    .then((res) => res.json())
+    .then((data) => {
+      state.vehicles = data;
+    });
+}
+
+function fetchGameData() {
+  toggleLoader(true);
+  fetch(`${BASE_URL}/gameData`)
+    .then((response) => response.json())
+    .then((data) => {
+      state.gameData = data;
+      showRaceData(data);
+      showOwedAmount(state.gameData);
+      toggleLoader(false);
+    });
+}
+
+function saveData(gameData) {
+  fetch(`${BASE_URL}/gameData`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(gameData),
+  })
+    .then((res) => {
+      console.log("response.status: ", res.status);
+      showOwedAmount(state.gameData);
+    })
+    .catch((err) => {
+      console.error("Error: ", err);
+    });
 }
 
 (function () {
   displayCups(dom.ctgpCups, db.ctgpData);
   displayCups(dom.wiiCups, db.wiiData);
-  fetchData();
+  fetchGameData();
+  fetchCharacterData();
+  fetchVehicleData();
 })();
 
 dom.defaultSortButton.addEventListener("click", () => {
@@ -334,18 +555,21 @@ dom.toTopButton.addEventListener("click", () => {
 dom.increaseEllieCupsButton.addEventListener("click", () => {
   increaseCupCount("ellie");
   saveData(state.gameData);
-  showRaceData();
+  showRaceData(state.gameData);
 });
 dom.increaseElliotCupsButton.addEventListener("click", () => {
   increaseCupCount("elliot");
   saveData(state.gameData);
-  showRaceData();
+  showRaceData(state.gameData);
 });
 dom.resetCurrentCupsButton.addEventListener("click", () => {
-  state.gameData.ellie.currentCups = 0;
-  state.gameData.elliot.currentCups = 0;
+  state.gameData.ellie.cups.current = 0;
+  state.gameData.elliot.cups.current = 0;
   saveData(state.gameData);
-  showRaceData();
+  showRaceData(state.gameData);
+});
+dom.pickRacersButtton.addEventListener("click", () => {
+  pickRacers();
 });
 
 document.body.addEventListener("scroll", () => {
@@ -355,5 +579,5 @@ document.body.addEventListener("scroll", () => {
     } else {
       dom.toTopButton.style.display = "block";
     }
-  }, 500);
+  }, 400);
 });

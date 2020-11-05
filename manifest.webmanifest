@@ -3,7 +3,6 @@
   "name": "Mario Kart Custom",
   "discription": "Mario Kart Cups",
   "lang": "en",
-  "start_url": "https://mariokart.lifemanager.elliotreed.net/",
   "background_color": "#f7f7f7",
   "theme_color": "#2fb7e1",
   "dir": "ltr",
@@ -76,5 +75,5 @@
       "sizes": "16x16"
     }
   ],
-  "prefer_related_applications": "false"
+  "prefer_related_applications": false
 }

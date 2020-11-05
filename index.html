@@ -11,13 +11,42 @@
 </head>
 
 <body class="background">
+  <div id="loader">
+    <div class="loader">Loading...</div>
+  </div>
+
   <button id="to-top" class="wii-button">☝</button>
+
   <header>
     <div class="container">
       <img class="logo" src="./assets/img/Mario_Kart_Wii_Logo_Transparent.png" />
     </div>
   </header>
+
   <div class="container">
+
+    <div id="scorecard" class="game-panel">
+      <div class="score-display">
+        <figure>
+          <img src="./assets/img/DaisyMKW.png" />
+          <figcaption>Ellie</figcaption>
+        </figure>
+        <div class="cup-stats">
+          <p id="ellie-lifetime"></p>
+          <p id="ellie-current"></p>
+        </div>
+      </div>
+      <div class="score-display">
+        <figure>
+          <img src="./assets/img/Funky_KongMKW.png" />
+          <figcaption>Elliot</figcaption>
+        </figure>
+        <div class="cup-stats">
+          <p id="elliot-lifetime"></p>
+          <p id="elliot-current"></p>
+        </div>
+      </div>
+    </div>
 
     <div id="scoreboard" class="game-panel">
       <div id="scoreboard-controls">
@@ -42,45 +71,34 @@
           <button id="reset-current-cups" class="wii-button">Pay Up!</button>
         </div>
       </div>
+    </div>
 
-      <div class="score-display">
-        <figure>
-          <img src="./assets/img/DaisyMKW.png" />
-          <figcaption>Ellie</figcaption>
-        </figure>
-        <div class="cup-stats">
-          <p id="ellie-lifetime"></p>
-          <p id="ellie-current"></p>
-        </div>
-      </div>
-      <div class="score-display">
-        <figure>
-          <img src="./assets/img/Funky_KongMKW.png" />
-          <figcaption>Elliot</figcaption>
-        </figure>
-        <div class="cup-stats">
-          <p id="elliot-lifetime"></p>
-          <p id="elliot-current"></p>
-        </div>
+    <div id="racers-picker" class="game-panel">
+      <button id="pick-racers" class='wii-button'>pick racers</button>
+      <div>
+        <div id="ellie-racer"></div>
+        <div id="elliot-racer"></div>
       </div>
     </div>
 
     <div id="cup-picker" class="game-panel">
       <button id="pick-cup" class="wii-button">Random Cup</button>
-      <p id="picked-cup" class="race-stripe"></p>
+      <p id="picked-cup" class="race-stripe-right">hit the button!</p>
     </div>
-    <h3 class="race-header race-stripe">CTGP Revolution</h3>
+
+    <h3 class="race-header race-stripe-right">CTGP Revolution</h3>
     <div id="track-sort-controls">
       <button id="default" class="wii-button">default</button>
       <button id="custom" class="wii-button">custom</button>
       <button id="alphabetical" class="wii-button">alphabetical</button>
     </div>
     <div id="ctgp-cups"></div>
-    <h3 class="race-header race-stripe">Mario Kart Wii</h3>
+
+    <h3 class="race-header race-stripe-left">Mario Kart Wii</h3>
     <div id="wii-cups"></div>
   </div>
 
   <script type="module" src="./assets/js/app.js"></script>
-</body>s
+</body>
 
 </html>
