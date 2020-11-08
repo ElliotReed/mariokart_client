@@ -81,13 +81,13 @@ export const ctgpCustomCupData = [
     id: 14,
     title: "Mii Outfit C Cup",
     customTitle: "Mountain Cup",
-    customTracks: [111, 170, 31, 122],
+    customTracks: [111, 51, 31, 122],
   },
   {
     id: 15,
     title: "Poison Mushroom Cup",
     customTitle: "Sky Cup",
-    customTracks: [4, 213, 201, 159],
+    customTracks: [4, 213, 67, 159],
   },
   {
     id: 16,

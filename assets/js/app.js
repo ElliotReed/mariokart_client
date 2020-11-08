@@ -68,6 +68,7 @@ const dom = {
   pickCupButton: document.getElementById("pick-cup"),
   pickedCup: document.getElementById("picked-cup"),
   toTopButton: document.getElementById("to-top"),
+  gotoWiiCups: document.getElementById("goto_wii"),
   logo: document.querySelector(".logo"),
   increaseEllieCupsButton: document.getElementById("increase-ellie-cups"),
   increaseElliotCupsButton: document.getElementById("increase-elliot-cups"),
@@ -105,6 +106,10 @@ const state = {
   vehicles: [],
 };
 
+function gotoWii() {
+  dom.wiiCups.scrollIntoView({ behavior: "smooth" });
+}
+
 function toTop() {
   dom.scoreboard.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
@@ -117,17 +122,21 @@ function toggleLoader(boolean) {
   }
 }
 
-function getSimilarRacer(characters, otherRacer, proximity = 0) {
+function getSimilarRacer(characters, otherRacer, proximity) {
+  if (proximity === undefined) {
+    proximity = 0;
+  }
+
   const similarRacers = characters.filter((character) => {
     if (proximity === 0) {
       return (
-        character.bonus.total === otherRacer.bonus &&
+        character.bonus.total === otherRacer.bonus.total &&
         character.id != otherRacer.id
       );
     } else {
       return (
-        character.bonus.total + proximity === otherRacer.bonus ||
-        (character.bonus.total - proximity === otherRacer.bonus &&
+        character.bonus.total + proximity === otherRacer.bonus.total ||
+        (character.bonus.total - proximity === otherRacer.bonus.total &&
           character.id != otherRacer.id)
       );
     }
@@ -135,7 +144,7 @@ function getSimilarRacer(characters, otherRacer, proximity = 0) {
 
   if (similarRacers.length < 1) {
     proximity++;
-    getSimilarRacer(characters, otherRacer, proximity);
+    return getSimilarRacer(characters, otherRacer, proximity);
   } else {
     const index = randomIntegerFromInterval(0, similarRacers.length - 1);
     const similarRacer = similarRacers[index];
@@ -158,7 +167,8 @@ function getRacer(otherRacer) {
   racer.id = result.id;
   racer.name = result.name;
   racer.img = result.img;
-  racer.bonus = result.bonus.total;
+  racer.bonus = {};
+  racer.bonus.total = result.bonus.total;
   racer.class = result.class;
 
   if (racer.id === 25 || racer.id === 26) {
@@ -190,13 +200,10 @@ function getSimilarVehicle(vehicles, otherVehicle, proximity) {
 
   if (similarVehicles.length < 1) {
     proximity++;
-    console.log("no similar");
     return getSimilarVehicle(vehicles, otherVehicle, proximity);
   } else {
     const index = randomIntegerFromInterval(0, similarVehicles.length - 1);
-    console.log("index: ", index);
     const similarVehicle = similarVehicles[index];
-    console.log("getsimilarVehicle: ", similarVehicle);
     return similarVehicle;
   }
 }
@@ -210,9 +217,7 @@ function getVehicle(racer, otherVehicle) {
   });
 
   if (otherVehicle != undefined) {
-    console.log("otherVehicle: ", otherVehicle);
     const similarVehicle = getSimilarVehicle(vehiclesByClass, otherVehicle);
-    console.log("similarVehicle: ", similarVehicle);
     id = similarVehicle.id;
   }
 
@@ -228,9 +233,9 @@ function getVehicle(racer, otherVehicle) {
   vehicle.img = result.img;
   vehicle.stats = {};
   vehicle.stats.total = result.stats.total;
-  // console.log("vehicle: ", vehicle);
   return vehicle;
 }
+
 function pickRacers() {
   const ellieRacer = getRacer();
   const elliotRacer = getRacer(ellieRacer);
@@ -318,17 +323,13 @@ function randomCup() {
 function addTracks(tracks, cupData) {
   const trackContainer = document.createElement("div");
   trackContainer.setAttribute("class", "tracks");
-  // console.log("cupData: ", cupData);
   tracks.forEach((track) => {
-    const trackElementContainer = document.createElement("div");
     const trackElement = document.createElement("p");
-    trackElement.setAttribute("class", "border-glow");
     const currentTrack = cupData.tracks.filter((el) => {
       return el.id === track;
     });
     trackElement.innerText = currentTrack[0].title;
-    trackElementContainer.appendChild(trackElement);
-    trackContainer.appendChild(trackElementContainer);
+    trackContainer.appendChild(trackElement);
   });
   return trackContainer;
 }
@@ -570,6 +571,9 @@ dom.resetCurrentCupsButton.addEventListener("click", () => {
 });
 dom.pickRacersButtton.addEventListener("click", () => {
   pickRacers();
+});
+dom.gotoWiiCups.addEventListener("click", () => {
+  gotoWii();
 });
 
 document.body.addEventListener("scroll", () => {

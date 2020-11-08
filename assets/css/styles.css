@@ -4,17 +4,27 @@
   --blueAlpha: #2fb7e1c5;
   --gold: rgb(158, 134, 0);
   --silver: #a6b8c2;
-  --black: #222222;
+  --black: #000000;
   --red: #d85555;
   --box-shadow: 3px 3px 8px #00000088;
-  --border-size: 6px;
+  --box-shadow__inner: 0 0 0.5rem 1px rgb(0, 0, 0, 0.4) inset;
+  --border-size: 8px;
   --border-radius: 0.68rem;
+  --background-wii-repeat: repeating-linear-gradient(
+    var(--black),
+    var(--black) 0.125rem,
+    #222222 0.125rem,
+    #222222 0.25rem
+  );
+  --animate-background-wii-repeat: wii-background 1s linear infinite;
   --fade-in: fade-in 600ms ease-in-out;
 }
 
+/* #region Document */
 html {
   font-size: 16px;
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
 }
 
 /* tablet */
@@ -58,33 +68,50 @@ body {
 *:after {
   box-sizing: inherit;
 }
+/* #endregion Document */
 
 .wii-button {
-  width: 6.25rem;
-  height: 6.25rem;
-  box-shadow: var(--box-shadow);
-  border: 10px solid var(--blue);
-  border-radius: 50%;
+  z-index: initial;
+  position: relative;
+  --width-height: 6rem;
+  width: var(--width-height);
+  height: var(--width-height);
+  box-shadow: 
+    /* inner edge */ var(--box-shadow__inner),
+    /* button shadow */ 0px 0.25rem 0.25em 0 rgba(0, 0, 0, 0.25);
   outline: none;
+  border: var(--border-size) solid var(--blue);
+  border-radius: 50%;
+  background: linear-gradient(
+    to bottom,
+    #f7f7f7,
+    #f7f7f7 40%,
+    white 80%,
+    #b5c8ce
+  );
   font-family: inherit;
-  font-size: 0.68rem;
-  font-weight: bold;
+  font-weight: 800;
   text-transform: capitalize;
   cursor: pointer;
-  transition: all 0.32s ease-in-out;
+  /* transition: all 0.6s ease-in-out; */
 }
 
 .wii-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 0 4px #00000088;
+  transform: translateY(0.25em);
+  box-shadow:
+    /* inner edge */ 0 0 0.5rem 1px rgb(0, 0, 0, 0.4) inset;
+}
+
+.wii-button:focus {
+  outline: none;
 }
 
 #to-top {
-  display: none;
   z-index: 100;
   position: fixed;
   right: 24px;
   bottom: 12px;
+  display: none;
   font-size: 24px;
   font-weight: lighter;
 }
@@ -129,16 +156,7 @@ header {
   );
 }
 
-.game-panel__dark {
-  background: linear-gradient(
-    to bottom,
-    #222222ee 10%,
-    var(--black) 25%,
-    var(--black) 75%,
-    #222222ee 90%
-  );
-}
-
+/* #region Score Card */
 #scorecard div:first-child {
   margin-bottom: 1rem;
 }
@@ -231,7 +249,9 @@ header {
 #scoreboard-controls button > figure {
   margin: 0;
 }
+/* #endregion Score Card */
 
+/* #region Racers Picker */
 #racers-picker {
   display: flex;
   flex-direction: column;
@@ -254,12 +274,13 @@ header {
 }
 
 .racer-container {
+  animation: var(--fade-in), var(--animate-background-wii-repeat);
+  min-height: 7rem;
   display: flex;
   justify-content: space-around;
+  align-items: center;
   padding: 1rem;
-  transition: all 0.32s ease-in-out;
-  animation: var(--fade-in);
-  background: #111111;
+  background: var(--background-wii-repeat);
   color: var(--white);
   border: var(--border-size) solid var(--blue);
   border-radius: var(--border-radius);
@@ -273,10 +294,11 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 6rem;
+  text-align: center;
 }
 
 .racer-card img {
-  animation: var(--fade-in);
   height: 4rem;
 }
 
@@ -317,7 +339,9 @@ header {
     height: 4rem;
   }
 }
+/* #endregion Racers Picker */
 
+/* #region Cup Picker */
 #cup-picker {
   display: flex;
   align-items: center;
@@ -338,6 +362,7 @@ header {
   text-transform: capitalize;
   animation: var(--fade-in);
 }
+/* #endregion Cup Picker */
 
 #track-sort-controls {
   display: flex;
@@ -364,14 +389,43 @@ header {
   text-align: right;
 }
 
+#goto_wii-container {
+  display: flex;
+  justify-content: flex-end;
+  margin: 3rem 1rem 0;
+}
+
+#goto_wii {
+  width: 50%;
+  padding: 1rem;
+  border: none;
+  line-height: 1rem;
+  font-size: 1rem;
+  color: var(--white);
+  cursor: pointer;
+  outline: none;
+  box-shadow: var(--box-shadow);
+}
+
+#goto_wii::after {
+  content: "\1f847";
+  margin-left: 0.5rem;
+}
+
+#goto_wii:active {
+  transform: translateY(0.25rem);
+  box-shadow: 0 0 0 0 black;
+}
+
 .race-header {
-  margin: 3rem 0 1rem;
+  margin: 1rem 0 3rem 1rem;
   padding: 1rem;
   border: none;
   line-height: 3rem;
   font-size: 3rem;
 }
 
+/* #region Cup */
 .cup {
   margin: 0.68rem;
   box-shadow: var(--box-shadow);
@@ -388,7 +442,7 @@ header {
 }
 
 .cup img {
-  max-height: 8rem;
+  max-height: 6rem;
   margin: 0;
 }
 
@@ -402,11 +456,12 @@ header {
   border: var(--border-size) solid var(--blue);
   border-radius: 50%;
   background: var(--white);
+  box-shadow: var(--box-shadow__inner);
 }
 
 .cup h1 {
   margin: 1em 0;
-  font-weight: bold;
+  font-weight: 900;
   font-size: 2.32rem;
   text-shadow: -2px -2px 0 var(--white), 2px -2px 0 var(--white),
     -2px 2px 0 var(--white), 2px 2px 0 var(--white);
@@ -420,56 +475,37 @@ header {
 }
 
 .cup-number {
-  font-size: 0.8rem;
   margin: 0;
+  font-size: 0.8rem;
+  font-weight: normal;
   text-align: right;
 }
+/* #endregion Cup */
 
+/* #region Tracks */
 .tracks {
   font-size: 2em;
 }
 
-.tracks div {
-  position: relative;
-  margin: 1rem 0;
-}
-
-.border-glow {
-  animation: border-glow 600ms ease-in-out infinite alternate-reverse;
-}
-
-@keyframes border-glow {
-  from {
-    box-shadow: 1px 1px 10px var(--gold);
-  }
-  to {
-    box-shadow: -1px -1px 10px var(--gold);
-  }
-}
-
 .tracks p {
   margin: 0;
+  margin: 1rem 0;
   padding: 0.5em;
   border: 3px solid var(--gold);
-  background-color: var(--black);
+  background: var(--background-wii-repeat);
   text-shadow: -2px -2px 0 var(--gold), 2px -2px 0 var(--gold),
     -2px 2px 0 var(--gold), 2px 2px 0 var(--gold);
+  animation: wii-background 1s linear infinite,
+    border-glow 600ms ease-in-out infinite alternate-reverse;
 }
+/* #endregion Tracks */
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 100;
-  }
-}
-
+/* #region Loader */
 #loader {
   z-index: 200;
   display: none;
   align-items: center;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
@@ -504,6 +540,7 @@ header {
   -webkit-animation: load8 1.1s infinite linear;
   animation: load8 1.1s infinite linear;
 }
+
 @-webkit-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
@@ -522,5 +559,33 @@ header {
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+/* #endregion Loader */
+
+@keyframes border-glow {
+  from {
+    box-shadow: 1px 1px 10px var(--gold);
+  }
+  to {
+    box-shadow: -1px -1px 10px var(--gold);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 100;
+  }
+}
+
+@keyframes wii-background {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 -0.5rem;
   }
 }
