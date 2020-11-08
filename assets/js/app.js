@@ -155,9 +155,22 @@ function getSimilarRacer(characters, otherRacer, proximity) {
 function getRacer(otherRacer) {
   const racer = {};
   let id = randomIntegerFromInterval(1, state.characters.length);
+  // eliminate one of mii outfit b
+  if (id === 25) {
+    if (otherRacer != undefined) {
+      return getRacer(otherRacer);
+    } else {
+      return getRacer();
+    }
+  }
+
   if (otherRacer != undefined) {
     const similarRacer = getSimilarRacer(state.characters, otherRacer);
     id = similarRacer.id;
+    // eliminate one of mii outfit b
+    if (id === 25) {
+      return getRacer(otherRacer);
+    }
   }
 
   const result = state.characters.filter((character) => {
@@ -171,14 +184,24 @@ function getRacer(otherRacer) {
   racer.bonus.total = result.bonus.total;
   racer.class = result.class;
 
-  if (racer.id === 25 || racer.id === 26) {
+  if (racer.id === 26) {
     racer.name = "Mii Outfit B";
     racer.img = "Mii_Outfit_B.png";
+    if (otherRacer != undefined) {
+      racer.class = "heavy";
+    } else {
+      racer.class = "small";
+    }
   }
 
   if (racer.id === 27) {
     racer.name = "Mii Outfit A";
     racer.img = "Mii_Outfit_A.png";
+    if (otherRacer != undefined) {
+      racer.class = "heavy";
+    } else {
+      racer.class = "small";
+    }
   }
 
   return racer;
