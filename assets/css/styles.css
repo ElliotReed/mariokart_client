@@ -1,6 +1,7 @@
 :root {
   --white: #f7f7f7;
   --blue: #2fb7e1;
+  --blue-dark: #2aa6cc;
   --blueAlpha: #2fb7e1c5;
   --gold: rgb(158, 134, 0);
   --silver: #a6b8c2;
@@ -9,7 +10,8 @@
   --box-shadow: 3px 3px 8px #00000088;
   --box-shadow__inner: 0 0 0.5rem 1px rgb(0, 0, 0, 0.4) inset;
   --border-size: 8px;
-  --border-radius: 0.68rem;
+  --border-radius: 10px;
+  --borderRadius_small: 3px;
   --background-wii-repeat: repeating-linear-gradient(
     var(--black),
     var(--black) 0.125rem,
@@ -70,13 +72,71 @@ body {
 }
 /* #endregion Document */
 
+/* #region General Styles */
+.background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url("../img/Mario_Kart_Tour.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: bisque;
+}
+
+.container {
+  position: relative;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0.5rem;
+  background-color: transparent;
+}
+
+.game-panel {
+  margin: 1rem 0;
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  background: linear-gradient(
+    to bottom,
+    #f7f7f7ee 10%,
+    var(--white) 25%,
+    var(--white) 75%,
+    #f7f7f7ee 90%
+  );
+}
+
+.race-stripe-right {
+  box-shadow: -3px 3px 0 #00000044;
+  border-radius: var(--borderRadius_small);
+  background: linear-gradient(
+    to right,
+    var(--blue) 50%,
+    var(--blueAlpha) 68%,
+    transparent
+  );
+}
+
+.race-stripe-left {
+  box-shadow: 3px 3px 0 #00000044;
+  border-radius: var(--borderRadius_small);
+  background: linear-gradient(
+    to left,
+    var(--blue) 50%,
+    var(--blueAlpha) 75%,
+    transparent
+  );
+  text-align: right;
+}
+
 .wii-button {
   z-index: initial;
   position: relative;
-  --width-height: 6rem;
+  flex-shrink: 0;
+  --width-height: 5.5rem;
   width: var(--width-height);
   height: var(--width-height);
-  box-shadow: 
+  box-shadow:
     /* inner edge */ var(--box-shadow__inner),
     /* button shadow */ 0px 0.25rem 0.25em 0 rgba(0, 0, 0, 0.25);
   outline: none;
@@ -93,7 +153,18 @@ body {
   font-weight: 800;
   text-transform: capitalize;
   cursor: pointer;
-  /* transition: all 0.6s ease-in-out; */
+  transition: all 0.168s ease-in-out;
+}
+
+.wii-button:hover {
+  border: var(--border-size) solid var(--blue-dark);
+  background: linear-gradient(
+    to bottom,
+    #fcfcfc,
+    #fcfcfc 40%,
+    white 80%,
+    #b5c8ce
+  );
 }
 
 .wii-button:active {
@@ -105,22 +176,24 @@ body {
 .wii-button:focus {
   outline: none;
 }
+/* #endregion  General Styles */
 
+/* #region Component Styles */
 #to-top {
   z-index: 100;
   position: fixed;
-  right: 24px;
-  bottom: 12px;
+  right: 0.5rem;
+  bottom: 0.5rem;
   display: none;
   font-size: 24px;
   font-weight: lighter;
 }
 
-.container {
-  position: relative;
-  max-width: 40rem;
-  margin: 0 auto;
-  background-color: transparent;
+@media only screen and (min-width: 768px) {
+  #to-top {
+    right: 24px;
+    bottom: 12px;
+  }
 }
 
 header {
@@ -130,30 +203,6 @@ header {
 .logo {
   width: 68%;
   padding: 1rem;
-}
-
-.background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-image: url("../img/Mario_Kart_Tour.jpg");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-color: bisque;
-}
-
-.game-panel {
-  margin: 1rem;
-  border-radius: var(--border-radius);
-  padding: 1rem;
-  background: linear-gradient(
-    to bottom,
-    #f7f7f7ee 10%,
-    var(--white) 25%,
-    var(--white) 75%,
-    #f7f7f7ee 90%
-  );
 }
 
 /* #region Score Card */
@@ -265,8 +314,7 @@ header {
 
 #racers-picker h3 {
   text-transform: capitalize;
-  color: var(--blue);
-  margin: 0 0 0.68rem;
+  margin: 0 0 0.2rem;
 }
 
 #racers-picker h3::after {
@@ -279,11 +327,14 @@ header {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  box-shadow: var(--box-shadow);
+  border: var(--border-size) solid var(--blue);
+  border-radius: var(--border-radius);
   padding: 1rem;
   background: var(--background-wii-repeat);
   color: var(--white);
-  border: var(--border-size) solid var(--blue);
-  border-radius: var(--border-radius);
+  overflow: hidden;
+  /* border-collapse: separate; */
 }
 
 #ellie-racer {
@@ -364,47 +415,29 @@ header {
 }
 /* #endregion Cup Picker */
 
+/* #region Race Header */
 #track-sort-controls {
   display: flex;
   justify-content: space-around;
-  padding: 1rem;
-}
-
-.race-stripe-right {
-  background: linear-gradient(
-    to right,
-    var(--blue) 50%,
-    var(--blueAlpha) 68%,
-    transparent
-  );
-}
-
-.race-stripe-left {
-  background: linear-gradient(
-    to left,
-    var(--blue) 50%,
-    var(--blueAlpha) 75%,
-    transparent
-  );
-  text-align: right;
 }
 
 #goto_wii-container {
   display: flex;
   justify-content: flex-end;
-  margin: 3rem 1rem 0;
+  margin: 3rem 0 0;
 }
 
 #goto_wii {
-  width: 50%;
+  width: 100%;
   padding: 1rem;
   border: none;
+  border-radius: var(--borderRadius_small);
   line-height: 1rem;
   font-size: 1rem;
   color: var(--white);
   cursor: pointer;
   outline: none;
-  box-shadow: var(--box-shadow);
+  box-shadow: 3px 3px 0 #00000044;
 }
 
 #goto_wii::after {
@@ -418,16 +451,17 @@ header {
 }
 
 .race-header {
-  margin: 1rem 0 3rem 1rem;
+  margin: 2rem 0 1rem;
   padding: 1rem;
   border: none;
   line-height: 3rem;
   font-size: 3rem;
 }
+/* #endregion Race Header */
 
 /* #region Cup */
 .cup {
-  margin: 0.68rem;
+  margin: 1rem 0;
   box-shadow: var(--box-shadow);
   border-radius: var(--border-radius);
   background: linear-gradient(
@@ -450,8 +484,9 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 8rem;
-  height: 8rem;
+  --height-width: 8rem;
+  width: var(--height-width);
+  height: var(--height-width);
   margin: auto;
   border: var(--border-size) solid var(--blue);
   border-radius: 50%;
@@ -562,7 +597,9 @@ header {
   }
 }
 /* #endregion Loader */
+/* #endregion Component Styles */
 
+/* #region Animations */
 @keyframes border-glow {
   from {
     box-shadow: 1px 1px 10px var(--gold);
@@ -589,3 +626,4 @@ header {
     background-position: 0 -0.5rem;
   }
 }
+/* #endregion Animations */

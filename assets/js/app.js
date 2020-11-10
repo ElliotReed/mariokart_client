@@ -512,7 +512,7 @@ function fetchCharacterData() {
     });
 }
 
-// ==========http requests ==========
+// ========== http requests ==========
 function fetchVehicleData() {
   fetch(`${BASE_URL}/vehicleData`)
     .then((res) => res.json())
@@ -521,6 +521,14 @@ function fetchVehicleData() {
     });
 }
 
+function fetchSupportingData() {
+  fetch(`${BASE_URL}/supportingData`)
+    .then((response) => response.json())
+    .then((data) => {
+      db.wiiData.cups = data.wiiCupData;
+      db.wiiData.tracks = data.wiiTrackData;
+    });
+}
 function fetchGameData() {
   toggleLoader(true);
   fetch(`${BASE_URL}/gameData`)
