@@ -8,7 +8,7 @@
   --black: #000000;
   --red: #d85555;
   --box-shadow: 3px 3px 8px #00000088;
-  --box-shadow__inner: 0 0 0.5rem 1px rgb(0, 0, 0, 0.4) inset;
+  --box-shadow__inner: 0 0 0.5rem 1px rgb(0, 0, 0, 0.3) inset;
   --border-size: 8px;
   --border-radius: 10px;
   --borderRadius_small: 3px;
@@ -69,6 +69,10 @@ body {
 *:before,
 *:after {
   box-sizing: inherit;
+}
+
+button > * {
+  pointer-events: none;
 }
 /* #endregion Document */
 
@@ -138,7 +142,7 @@ body {
   height: var(--width-height);
   box-shadow:
     /* inner edge */ var(--box-shadow__inner),
-    /* button shadow */ 0px 0.25rem 0.25em 0 rgba(0, 0, 0, 0.25);
+    /* button shadow */ 0px 0.25rem 0.25em 0 rgba(0, 0, 0, 0.2);
   outline: none;
   border: var(--border-size) solid var(--blue);
   border-radius: 50%;
@@ -147,7 +151,7 @@ body {
     #f7f7f7,
     #f7f7f7 40%,
     white 80%,
-    #b5c8ce
+    #e1eef1
   );
   font-family: inherit;
   font-weight: 800;
