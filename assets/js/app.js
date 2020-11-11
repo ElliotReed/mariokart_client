@@ -62,17 +62,9 @@ db.ctgpData.cups.alphabeticalTracks = addAlphabeticalCupData(db.ctgpData);
 const dom = {
   ctgpCups: document.getElementById("ctgp-cups"),
   wiiCups: document.getElementById("wii-cups"),
-  defaultSortButton: document.getElementById("default"),
-  customSortButton: document.getElementById("custom"),
-  alphabeticalSortButton: document.getElementById("alphabetical"),
-  pickCupButton: document.getElementById("pick-cup"),
-  pickedCup: document.getElementById("picked-cup"),
   toTopButton: document.getElementById("to-top"),
-  gotoWiiCups: document.getElementById("goto_wii"),
-  logo: document.querySelector(".logo"),
-  increaseEllieCupsButton: document.getElementById("increase-ellie-cups"),
-  increaseElliotCupsButton: document.getElementById("increase-elliot-cups"),
   resetCurrentCupsButton: document.getElementById("reset-current-cups"),
+  pickedCup: document.getElementById("picked-cup"),
   ellieLifetime: document.getElementById("ellie-lifetime"),
   ellieCurrent: document.getElementById("ellie-current"),
   elliotLifetime: document.getElementById("elliot-lifetime"),
@@ -80,7 +72,6 @@ const dom = {
   owedAmount: document.getElementById("owed-amount"),
   scorecard: document.getElementById("scorecard"),
   scoreboard: document.getElementById("scoreboard"),
-  pickRacersButtton: document.getElementById("pick-racers"),
   ellieRacer: document.getElementById("ellie-racer"),
   elliotRacer: document.getElementById("elliot-racer"),
   loader: document.getElementById("loader"),
@@ -111,7 +102,7 @@ function gotoWii() {
 }
 
 function toTop() {
-  dom.scoreboard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  dom.scoreboard.scrollIntoView({ behavior: "smooth" });
 }
 
 function toggleLoader(boolean) {
@@ -566,47 +557,57 @@ function saveData(gameData) {
   fetchVehicleData();
 })();
 
-dom.defaultSortButton.addEventListener("click", () => {
-  state.trackType = "defaultTracks";
-  displayCups(dom.ctgpCups, db.ctgpData);
-});
-dom.customSortButton.addEventListener("click", () => {
-  state.trackType = "customTracks";
-  displayCups(dom.ctgpCups, db.ctgpData);
-});
-dom.alphabeticalSortButton.addEventListener("click", () => {
-  state.trackType = "alphabeticalTracks";
-  displayCups(dom.ctgpCups, db.ctgpData);
-});
-dom.pickCupButton.addEventListener("click", () => {
-  randomCup();
-});
-dom.toTopButton.addEventListener("click", () => {
-  toTop();
-});
-dom.increaseEllieCupsButton.addEventListener("click", () => {
-  increaseCupCount("ellie");
-  saveData(state.gameData);
-  showRaceData(state.gameData);
-});
-dom.increaseElliotCupsButton.addEventListener("click", () => {
-  increaseCupCount("elliot");
-  saveData(state.gameData);
-  showRaceData(state.gameData);
-});
-dom.resetCurrentCupsButton.addEventListener("click", () => {
-  state.gameData.ellie.cups.current = 0;
-  state.gameData.elliot.cups.current = 0;
-  saveData(state.gameData);
-  showRaceData(state.gameData);
-});
-dom.pickRacersButtton.addEventListener("click", () => {
-  pickRacers();
-});
-dom.gotoWiiCups.addEventListener("click", () => {
-  gotoWii();
-});
+const handleClick = function (event) {
+  const targetElement = event.target;
+  if (!targetElement.id) return;
+  switch (targetElement.id) {
+    case "goto_wii":
+      gotoWii();
+      break;
+    case "custom":
+      state.trackType = "customTracks";
+      displayCups(dom.ctgpCups, db.ctgpData);
+      break;
+    case "to-top":
+      toTop();
+      break;
+    case "pick-racers":
+      pickRacers();
+      break;
+    case "reset-current-cups":
+      state.gameData.ellie.cups.current = 0;
+      state.gameData.elliot.cups.current = 0;
+      saveData(state.gameData);
+      showRaceData(state.gameData);
+      break;
+    case "increase-elliot-cups":
+      increaseCupCount("elliot");
+      saveData(state.gameData);
+      showRaceData(state.gameData);
+      break;
+    case "increase-ellie-cups":
+      increaseCupCount("ellie");
+      saveData(state.gameData);
+      showRaceData(state.gameData);
+      break;
 
+    case "pick-cup":
+      randomCup();
+      break;
+    case "default":
+      state.trackType = "defaultTracks";
+      displayCups(dom.ctgpCups, db.ctgpData);
+      break;
+    case "alphabetical":
+      state.trackType = "alphabeticalTracks";
+      displayCups(dom.ctgpCups, db.ctgpData);
+      break;
+    default:
+      console.log("clicked default");
+  }
+};
+
+document.documentElement.addEventListener("click", handleClick);
 document.body.addEventListener("scroll", () => {
   setTimeout(() => {
     if (document.body.scrollTop === 0) {
